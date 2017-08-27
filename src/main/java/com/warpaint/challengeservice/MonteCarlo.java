@@ -2,7 +2,9 @@ package com.warpaint.challengeservice;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Comparator;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 @Slf4j
 public class MonteCarlo {
@@ -13,6 +15,14 @@ public class MonteCarlo {
     public MonteCarlo(double[] priceMovements) {
         this.priceMovements = priceMovements;
     }
+
+
+    public double[] simulateAndReturnMaxEndPrice(double startPrice, int intervalCount, int iterationCount, int threadCount) {
+        return IntStream.range(0, threadCount).boxed().parallel()
+                .map(i -> simulateAndReturnMaxEndPrice(startPrice, intervalCount, iterationCount/threadCount))
+                .max(Comparator.comparingDouble(d -> d[d.length-1])).get();
+    }
+
 
     public double[] simulateAndReturnMaxEndPrice(double startPrice, int intervalCount, int iterationCount) {
         double[] simulationWithMaxEndPrice = new double[intervalCount];

@@ -42,7 +42,8 @@ public class ChallengeService {
 		double[] simulationResult = monteCarlo.simulateAndReturnMaxEndPrice(
                 monthEndData.last().getClosePrice().doubleValue(),
                 monthCount,
-                iterationCount
+                iterationCount,
+				4
         );
 
 		return mergeDatesAndPrices(futureMonthEnds, simulationResult);
