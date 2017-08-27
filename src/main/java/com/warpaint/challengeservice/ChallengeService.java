@@ -1,18 +1,17 @@
 package com.warpaint.challengeservice;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Iterator;
-import java.util.NavigableSet;
-import java.util.TreeSet;
-
+import com.warpaint.challengeservice.model.assetdata.AssetData;
+import com.warpaint.challengeservice.model.assetdataprocessor.AssetDataProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.warpaint.challengeservice.model.assetdata.AssetData;
-import com.warpaint.challengeservice.model.assetdataprocessor.AssetDataProcessor;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Iterator;
+import java.util.NavigableSet;
+import java.util.TreeSet;
 
 @Component
 public class ChallengeService {

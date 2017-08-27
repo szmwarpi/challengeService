@@ -1,7 +1,10 @@
 package com.warpaint.challengeservice;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Random;
 
+@Slf4j
 public class MonteCarlo {
 
     private final double[] priceMovements;
@@ -17,15 +20,22 @@ public class MonteCarlo {
         double[] temp;
         int last = intervalCount - 1;
 
+        StopWatch stopWatch = new StopWatch();
+
         fill(startPrice, simulationWithMaxEndPrice);
+        stopWatch.lap();
         for (int iteration = 1; iteration < iterationCount; iteration++) {
+            currentSimulation = new double[intervalCount];
             fill(startPrice, currentSimulation);
+            stopWatch.lap();
             if (currentSimulation[last] > simulationWithMaxEndPrice[last]) {
                 temp = simulationWithMaxEndPrice;
                 simulationWithMaxEndPrice = currentSimulation;
                 currentSimulation = temp;
             }
         }
+
+        log.info(stopWatch.toString());
 
         return simulationWithMaxEndPrice;
     }
