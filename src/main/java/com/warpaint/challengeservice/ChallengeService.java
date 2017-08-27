@@ -18,9 +18,6 @@ public class ChallengeService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ChallengeService.class);
 
-	private static final int FUTURE_MONTH_COUNT = 240;
-	private static final int ITERATION_COUNT = 1000;
-
 	private AssetDataProcessor assetDataProcessor;
 	
 	@Autowired
@@ -34,18 +31,18 @@ public class ChallengeService {
 		return historicalPriceData;
 	}
 	
-	public NavigableSet<AssetData>getFuturePriceData() {
+	public NavigableSet<AssetData>getFuturePriceData(int monthCount, int iterationCount) {
 		logger.info("Generate future prices");
 
 		NavigableSet<AssetData> monthEndData = assetDataProcessor.fetchMonthEndData();
 
 		MonteCarlo monteCarlo = new MonteCarlo(getPriceMovements(monthEndData));
-		LocalDate[] futureMonthEnds = generateMonthEndDates(monthEndData.last().getPriceAsOf(), FUTURE_MONTH_COUNT);
+		LocalDate[] futureMonthEnds = generateMonthEndDates(monthEndData.last().getPriceAsOf(), monthCount);
 
 		double[] simulationResult = monteCarlo.simulateAndReturnMaxEndPrice(
                 monthEndData.last().getClosePrice().doubleValue(),
-                FUTURE_MONTH_COUNT,
-                ITERATION_COUNT
+                monthCount,
+                iterationCount
         );
 
 		return mergeDatesAndPrices(futureMonthEnds, simulationResult);
