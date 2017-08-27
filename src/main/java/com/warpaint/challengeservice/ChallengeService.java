@@ -18,7 +18,9 @@ import com.warpaint.challengeservice.model.assetdataprocessor.AssetDataProcessor
 public class ChallengeService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ChallengeService.class);
-	
+
+	private static final int FUTURE_MONTH_COUNT = 240;
+
 	private AssetDataProcessor assetDataProcessor;
 	
 	@Autowired
@@ -34,12 +36,16 @@ public class ChallengeService {
 	
 	public NavigableSet<AssetData>getFuturePriceData() {
 		logger.info("Generate future prices");
+
 		NavigableSet<AssetData> monthEndData = assetDataProcessor.fetchMonthEndData();
-		AssetData first = monthEndData.first();
-		return mergeDatesAndPrices(
-				generateMonthEndDates(first.getPriceAsOf(), monthEndData.size()),
-				generatePrices(first.getClosePrice().doubleValue(), getPriceMovements(monthEndData))
-		);
+
+		MonteCarlo monteCarlo = new MonteCarlo(getPriceMovements(monthEndData));
+		LocalDate[] futureMonthEnds = generateMonthEndDates(monthEndData.last().getPriceAsOf(), FUTURE_MONTH_COUNT);
+
+		double[] simulationResult = new double[FUTURE_MONTH_COUNT];
+		monteCarlo.fill(monthEndData.last().getClosePrice().doubleValue(), simulationResult);
+
+		return mergeDatesAndPrices(futureMonthEnds, simulationResult);
 	}
 
 	private double[] getPriceMovements(NavigableSet<AssetData> monthEndData) {
@@ -57,6 +63,9 @@ public class ChallengeService {
 	private LocalDate[] generateMonthEndDates(LocalDate start, int count) {
 		LocalDate[] result = new LocalDate[count];
 		LocalDate nextMonthStart = LocalDate.of(start.getYear(), start.getMonth().getValue(), 1).plusMonths(1);
+		if (nextMonthStart.minusDays(1).equals(start)) {
+			nextMonthStart = nextMonthStart.plusMonths(1);
+		}
 		for (int i = 0; i < count; i++ ) {
 			result[i] = nextMonthStart.minusDays(1);
 			nextMonthStart = nextMonthStart.plusMonths(1);
