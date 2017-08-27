@@ -75,5 +75,24 @@ public class AssetDataProcessor {
 		}
 		return historicalData;
 	}
-	
+
+	public NavigableSet<AssetData> fetchMonthEndData() {
+		return filterForMonthEnds(fetchHistoricalData());
+	}
+
+	protected NavigableSet<AssetData> filterForMonthEnds(NavigableSet<AssetData> assetData) {
+		NavigableSet<AssetData> result = new TreeSet<>();
+		Integer monthLastSeen = null;
+		for (AssetData dataPoint : assetData.descendingSet()) {
+			int month = dataPoint.getPriceAsOf().getMonthValue();
+			if (monthLastSeen == null) {
+				monthLastSeen = month;
+			} else if ( ! monthLastSeen.equals(month)) {
+				result.add(dataPoint);
+				monthLastSeen = month;
+			}
+		}
+		return result;
+	}
+
 }

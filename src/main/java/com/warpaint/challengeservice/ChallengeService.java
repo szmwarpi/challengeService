@@ -31,8 +31,8 @@ public class ChallengeService {
 	
 	public NavigableSet<AssetData>getFuturePriceData() {
 		logger.info("Generate future prices");
-		// TODO Implement getFuturePrices()
-		return new TreeSet<>();
+		NavigableSet<AssetData> monthEndData = assetDataProcessor.fetchMonthEndData();
+		return monthEndData;
 	}
 	
 }
